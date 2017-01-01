@@ -1,0 +1,10 @@
+﻿
+Compiling 'LEDAquaduino' for 'Arduino/Genuino Uno'
+
+Program size: 7 148 bytes (used 22% of a 32 256 byte maximum) (7,09 secs)
+Minimum Memory Usage: 1110 bytes (54% of a 2048 byte maximum)
+ 
+Uploading 'LEDAquaduino' to 'Arduino/Genuino Uno' using 'USBasp'
+	The upload process has finished.
+avrdude: warning: cannot set sck period. please check for usbasp firmware update.
+avrdude: warning: cannot set sck period. please check for usbasp firmware update.

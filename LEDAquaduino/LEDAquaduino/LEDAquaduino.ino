@@ -30,10 +30,10 @@ ESP8266 wifi(&EspSerial);
 //#define DEMO
 /*////////////////////////////////////////////////////////////////////////////*/
 
-#define auth "xxx"
-#define wifiauth "xxx"
-#define ssid "xxx"
-#define pass "xxx"
+#define auth "xxxx"			//Auth token for BLUETOOTH!
+#define wifiauth "xxx"		//Auth for WIFI
+#define ssid "xxx"			//WIFI SSID
+#define pass "xxx"			//WIFI PASS
 
 /*////////////////////////////////////////////////////////////////////////////*/
 long SunriseStart = 28800;				//When sunrise mode starts(hour) 8:00

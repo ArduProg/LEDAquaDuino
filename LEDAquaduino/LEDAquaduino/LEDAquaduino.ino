@@ -33,7 +33,7 @@ ESP8266 wifi(&EspSerial);
 #define auth "xxxx"			//Auth token for BLUETOOTH!
 #define wifiauth "xxx"		//Auth for WIFI
 #define ssid "xxx"			//WIFI SSID
-#define pass "xxx"			//WIFI PASS
+#define pass "xxx"	//WIFI PASS
 
 /*////////////////////////////////////////////////////////////////////////////*/
 long SunriseStart = 28800;				//When sunrise mode starts(hour) 8:00
@@ -119,6 +119,26 @@ void EEPROMsetup() {
 	EEPROM.get(32, NightStart);
 	EEPROM.get(36, OFFstart);
 	EEPROM.get(40, fadetime);
+}
+void email() {
+	bool high = false;
+	bool low = false;
+	double watertemp = temp.getTemp();
+	byte airtemp = dht.readTemperature();
+	if (watertemp > 35 && high == false) {
+		Blynk.email("AquaDuino Temp Warning", "Water temperature is too high(>35°C)");
+		high = true;
+	}
+	if (watertemp < 33 && high == true) {
+		high = false;
+	}
+	if (watertemp <21 && low == false) {
+		Blynk.email("AquaDuino Temp Warning", "Water temperature is too low(<22°C)");
+		low = true;
+	}
+	if (watertemp >24 && low == true) {
+		low = false;
+	}
 }
 void push()
 {

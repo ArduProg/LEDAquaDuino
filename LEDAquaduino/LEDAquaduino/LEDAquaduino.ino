@@ -1,17 +1,15 @@
 
 #include "Thermistor.h"
-#include "Time.h"
 #include <DHT.h>
-#include <Event.h>
 #include <Wire.h>
 #include "RTClib.h"
 #include <EEPROM.h>
 #include "LEDFader.h"
 #include "SimpleTimer.h"
-#include "Timer.h"
 #include <math.h>
 #include <SoftwareSerial.h>
-
+#include <TimeLib.h>
+//#include <WidgetRTC.h>
 //#define slowpwm
 //#define BT
 
@@ -26,16 +24,24 @@ ESP8266 wifi(&EspSerial);
 #include <BlynkSimpleStream.h>
 #endif
 //#define TEST
-//#define TIMESET
+#define TIMESET
 //#define DEMO
-/*////////////////////////////////////////////////////////////////////////////*/
+//#define webRTC
+
+
+/************DO NOT CHANGE ANYTHING ABOVE THIS TEXT! UNLESS U KNOW WHAT U R DOING!****/
+/*///////////////////////////////////////////////////////////////////////////////////*/
 
 #define auth "xxxx"			//Auth token for BLUETOOTH!
 #define wifiauth "xxx"		//Auth for WIFI
 #define ssid "xxx"			//WIFI SSID
 #define pass "xxx"	//WIFI PASS
 
-/*////////////////////////////////////////////////////////////////////////////*/
+/*///////////////////////////////////////////////////////////////////////////////////*/
+/************DO NOT CHANGE ANYTHING UNDER THIS TEXT! UNLESS U KNOW WHAT U R DOING!****/
+
+
+
 long SunriseStart = 28800;				//When sunrise mode starts(hour) 8:00
 
 long  DayStart = 36000;					//When day mode starts(hour) 10:00
@@ -44,7 +50,7 @@ long SunsetStart = 64800;				//When sunset mode starts(hour) 18:00
 
 long  NightStart = 72000;				//When night mode starts(hour) 20:00
 
-long  OFFstart = 82800;				//When to shut down all acc(hour) 23:00
+long  OFFstart = 82800;				//When to shut down all acc(hour) 21:00
 
 byte fadeM = 10;
 long fadetime = 60000;
@@ -80,7 +86,13 @@ SimpleTimer t;
 #define Wp 10		//White channel PWM pin
 #define BWp 11		//Powerled blue PWM pin
 DHT dht(2, 22);
+#ifndef webRTC
 RTC_DS1307 rtc;
+#endif // webRTC
+#ifdef webRTC
+WidgetRTC rtc;
+BLYNK_ATTACH_WIDGET(rtc, V5);
+#endif
 byte read = 0;
 byte send = 0;
 LEDFader BW(BWp);
@@ -142,34 +154,23 @@ void email() {
 }
 void push()
 {
+#ifndef webRTC
 #ifndef TEST
 	DateTime now = rtc.now();
 #endif
+#endif // !webRTC
+
 	bool high = false;
 	bool low = false;
 	double watertemp = temp.getTemp();
 	byte airtemp = dht.readTemperature();
 	byte humidity = dht.readHumidity();
 #ifndef BT
-	if (watertemp > 35 && high == false) {
-		Blynk.email("AquaDuino Temp Warning", "Water temperature is too high(>35°C)");
-		high = true;
-	}
-	if (watertemp < 35 && high == true) {
-		high = false;
-	}
-	if (watertemp <22 && low == false) {
-		Blynk.email("AquaDuino Temp Warning", "Water temperature is too low(<22°C)");
-		low = true;
-	}
-	if (watertemp >22 && low == true) {
-		low = false;
-	}
 #endif
 	Blynk.virtualWrite(V4, watertemp);
 	Blynk.virtualWrite(V5, airtemp);
 	Blynk.virtualWrite(V6, humidity);
-
+#ifndef webRTC
 #ifndef TEST
 	Blynk.virtualWrite(V14, now.hour());
 	Blynk.virtualWrite(V15, now.minute());
@@ -179,6 +180,16 @@ void push()
 	long hod = HH * 3600L;
 	secnow = hod + min;
 #endif
+#endif
+#ifdef webRTC
+	Blynk.virtualWrite(V14, hour());
+	Blynk.virtualWrite(V15, minute());
+	byte MM = minute();
+	byte HH = hour();
+	int min = MM * 60;
+	long hod = HH * 3600L;
+	secnow = hod + min;
+#endif // webRTC
 }
 
 ////////////////////////////////////
@@ -187,11 +198,12 @@ void push()
 
 void setup() {
 	dht.begin();
-	Serial.begin(9600);
+	Serial.begin(ESP8266_BAUD);
 	delay(10);
 	t.setInterval(9000L, push);
+	t.setInterval(600000, email);
 #ifdef BT
-	Blynk.begin(auth, Serial);
+	//Blynk.begin(auth, Serial);
 #endif
 #ifndef BT 
 	Blynk.begin(wifiauth, wifi, ssid, pass, "arduprog.ddns.net");
@@ -209,18 +221,18 @@ void setup() {
 	rtc.begin();
 #ifndef TEST
 	DateTime now = rtc.now();
-#endif
+#endif // !webRTC
+
+	
 	power = 1;
 	digitalWrite(BWp, LOW);
 	digitalWrite(Wp, LOW);
 	digitalWrite(Rp, LOW);
 	digitalWrite(Gp, LOW);
 	digitalWrite(Bp, LOW);
-#ifdef TIMESET
 	if (!rtc.isrunning()) {
 		rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
 	}
-#endif
 }
 void loop() {
 
@@ -241,7 +253,6 @@ void loop() {
 	****************************************************/
 #ifndef TEST 
 #ifndef DEMO
-
 	if (power == 1) {
 		stopped = false;
 		if (secnow >= SunriseStart && secnow < DayStart) {
@@ -458,12 +469,14 @@ BLYNK_WRITE(V2) {
 		break;
 	}
 }
+#ifndef webRTC
 BLYNK_WRITE(V3) {
 	timeg = param.asLong();
 	hour1 = timeg / 3600;
 	minute1 = (timeg / 60) - (hour1 * 60);
 	rtc.adjust(DateTime(2016, 4, 11, hour1, minute1, 0));
 }
+#endif
 BLYNK_WRITE(V7) {
 	R.stop_fade();
 	switch (currentmode) {

@@ -7,8 +7,6 @@
 #include "LEDFader.h"
 #include "SimpleTimer.h"
 #include <math.h>
-#include <SoftwareSerial.h>
-#include <TimeLib.h>
 //#include <WidgetRTC.h>
 //#define slowpwm
 //#define BT
@@ -17,7 +15,7 @@
 #include <ESP8266_Lib.h>
 #include <BlynkSimpleShieldEsp8266.h>
 #define EspSerial Serial
-#define ESP8266_BAUD 9600
+
 ESP8266 wifi(&EspSerial);
 #endif // !BT
 #ifdef BT
@@ -31,7 +29,7 @@ ESP8266 wifi(&EspSerial);
 
 /************DO NOT CHANGE ANYTHING ABOVE THIS TEXT! UNLESS U KNOW WHAT U R DOING!****/
 /*///////////////////////////////////////////////////////////////////////////////////*/
-
+#define ESP8266_BAUD 115200
 #define auth "xxxx"			//Auth token for BLUETOOTH!
 #define wifiauth "xxx"		//Auth for WIFI
 #define ssid "xxx"			//WIFI SSID
@@ -39,7 +37,8 @@ ESP8266 wifi(&EspSerial);
 
 /*///////////////////////////////////////////////////////////////////////////////////*/
 /************DO NOT CHANGE ANYTHING UNDER THIS TEXT! UNLESS U KNOW WHAT U R DOING!****/
-
+///////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////
 
 
 long SunriseStart = 28800;				//When sunrise mode starts(hour) 8:00
@@ -85,7 +84,7 @@ SimpleTimer t;
 #define Bp 9		// Blue channel PWM pin
 #define Wp 10		//White channel PWM pin
 #define BWp 11		//Powerled blue PWM pin
-DHT dht(2, 22);
+DHT dht(2, 11);
 #ifndef webRTC
 RTC_DS1307 rtc;
 #endif // webRTC
@@ -201,7 +200,7 @@ void setup() {
 	Serial.begin(ESP8266_BAUD);
 	delay(10);
 	t.setInterval(9000L, push);
-	t.setInterval(600000, email);
+	t.setInterval(600000L, email);
 #ifdef BT
 	//Blynk.begin(auth, Serial);
 #endif

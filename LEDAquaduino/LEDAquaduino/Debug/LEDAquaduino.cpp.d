@@ -20,8 +20,6 @@ C:\Users\Ja\AppData\Local\Temp\VMicroBuilds\LEDAquaduino\uno\LEDAquaduino.cpp.o:
  C:\Users\Ja\AppData\Local\arduino15\packages\arduino\hardware\avr\1.6.14\libraries\EEPROM\src/EEPROM.h \
  C:\Users\Ja\Documents\Arduino\libraries\arduino-LEDFader-master/LEDFader.h \
  C:\Users\Ja\Documents\Arduino\libraries\SimpleTimer/SimpleTimer.h \
- C:\Users\Ja\AppData\Local\arduino15\packages\arduino\hardware\avr\1.6.14\libraries\SoftwareSerial\src/SoftwareSerial.h \
- C:\Users\Ja\Documents\Arduino\libraries\Time/TimeLib.h \
  C:\Users\Ja\Documents\Arduino\libraries\BlynkESP8266_Lib/ESP8266_Lib.h \
  C:\Users\Ja\Documents\Arduino\libraries\Blynk\src/BlynkSimpleShieldEsp8266.h \
  C:\Users\Ja\Documents\Arduino\libraries\Blynk\src/BlynkApiArduino.h \

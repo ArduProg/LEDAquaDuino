@@ -177,7 +177,7 @@ public:
     {
         config(esp8266, auth, domain, port);
         connectWiFi(ssid, pass);
-        while(this->connect() != true) {}
+       // while(this->connect() != true) {}
     }
 
 private:
